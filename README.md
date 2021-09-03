@@ -2,6 +2,10 @@
 
 Repository for animation demos and tools
 
+# Screenshot of my program
+![image](https://user-images.githubusercontent.com/41777532/132037457-d7346cc3-8f7c-4854-acb7-2d02197a0032.png)
+
+
 # Tools and dependencies
 
 To obtain the source and generate build files, you will need to install git and cmake. To build, you will 
