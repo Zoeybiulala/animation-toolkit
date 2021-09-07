@@ -1,5 +1,5 @@
 project(atk)
-cmake_minimum_required(VERSION 3.21.0)
+cmake_minimum_required(VERSION 3.16.0)
 
 if (WIN32) # NOTE: Needs testing for optional AntTweakBar
 

@@ -2,6 +2,11 @@
 
 Repository for animation demos and tools
 
+Helpful Links:
+
+* [CS317 course website](https://brynmawr-cs317-f21.github.io/website/)
+* [Assignment 00: Hello CS317](https://brynmawr-cs317-f21.github.io/website/asst00.html)
+
 # Tools and dependencies
 
 To obtain the source and generate build files, you will need to install git and cmake. To build, you will 
