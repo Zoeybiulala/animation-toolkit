@@ -7,9 +7,10 @@
 
 ## Sphere3D
 
-![ezgif com-gif-maker](https://user-images.githubusercontent.com/41777532/132148178-3b8c22f2-397c-4098-b95c-1f230450a251.gif)
+![ezgif com-gif-maker (1)](https://user-images.githubusercontent.com/41777532/132419537-a7e97b46-0262-4170-a482-ab0c4efd0996.gif)
 
 
-https://user-images.githubusercontent.com/41777532/132147920-dfbac5af-78ca-4ee0-9159-33bb6ebbf36b.mov
+https://user-images.githubusercontent.com/41777532/132419386-4c39eea3-7456-449d-ad0d-8668ff80c5df.mov
+
 
 * Animated 3D sphere. Pressing space key to make it move towards one direction, while pressing R key can make it reset to the (0,0,0) position.
