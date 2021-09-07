@@ -7,42 +7,42 @@ class Sphere3D : public atkui::Framework {
   Sphere3D() : atkui::Framework(atkui::Perspective) {
     
   }
-  //should this be private?
-  //position
-  double x = 0;
-  double y = 0;
-  double z = 0;
-  //velocity
-  double v = 500;
-  //random direction
-  vec3 unitvec = agl::randomUnitVector();
+  vec3 currentPos;
+  vec3 vel;
+  int keyFlag;
+  virtual void setup() {
+    //position
+    currentPos = vec3(0,0,0);
+    //velocity
+    vel = agl::randomUnitVector() * 100.0f;
+    keyFlag = 0;
+  }
 
   virtual void scene() {
     // colors are RGB triplets in range [0,1]
     setColor(vec3(0,1,0));
-
-
+    //hitting the space bar then move
+    if (keyFlag == 1) {
+      currentPos += dt() * vel;
+    }
     // draw a sphere at center of the world
     float radius = 50.0;
-    drawSphere(vec3(x,y,z), radius);
+    drawSphere(currentPos, radius);
   }
 
   void keyUp(int key, int mods){
 
     if(key == GLFW_KEY_SPACE) {
-      std::cout << "toggle spac key" << std::endl;
+      std::cout << "toggle space key" << std::endl;
       //change the position
-      x += dt() * v * unitvec[0];
-      y += dt() * v * unitvec[1];
-      z += dt() * v * unitvec[2];
-      std::cout << dt() << std::endl;
+      keyFlag = 1;
     } else if (key == GLFW_KEY_R) {
       std::cout << "toggle R key" << std::endl;
       //reset position
-      x = 0;
-      y = 0;
-      z = 0;
-      unitvec = agl::randomUnitVector(); //reset to another random direction
+      currentPos = vec3(0,0,0);
+      //geenrate a new direction
+      vel = agl::randomUnitVector() * 100.0f;
+      keyFlag = 0;
     } 
   }
   
