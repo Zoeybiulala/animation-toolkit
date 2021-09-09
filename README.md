@@ -6,6 +6,7 @@ Helpful Links:
 
 * [CS317 course website](https://brynmawr-cs317-f21.github.io/website/)
 * [Assignment 00: Hello CS317](https://brynmawr-cs317-f21.github.io/website/asst00.html)
+* [Assignment 01: Hello Animation](https://brynmawr-cs317-f21.github.io/website/asst01-hello.html)
 
 # Tools and dependencies
 
