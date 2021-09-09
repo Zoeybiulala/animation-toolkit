@@ -87,3 +87,4 @@ bin/*.exe
 lib/*
 Warrok.fbm/
 *.swo
+.DS_Store

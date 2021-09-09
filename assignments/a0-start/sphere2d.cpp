@@ -17,14 +17,15 @@ class Sphere2D : public atkui::Framework {
     double radius = 100; 
     drawSphere(vec3(x,y,0), radius);
 
+    // new color red
     setColor(vec3(1,0,0));
-    double x1 =width() * 0.5;
+
+    //draw a new sphere at cneter of screen
+    double x1 = width() * 0.5;
     double y1 = height() * 0.5;
     double radius1 = 200;
     drawSphere(vec3(x1,y1,-1000),radius1);
   }
-
-
 };
 
 int main(int argc, char** argv)
