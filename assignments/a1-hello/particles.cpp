@@ -6,6 +6,7 @@ class Particles : public atkui::Framework
 {
  public:
   Particles() : atkui::Framework(atkui::Orthographic) {
+    
   }
 
   virtual void setup() {
@@ -13,6 +14,10 @@ class Particles : public atkui::Framework
 
   virtual void scene() {
   }
+
+
+private:
+  
 };
 
 int main(int argc, char** argv) {
