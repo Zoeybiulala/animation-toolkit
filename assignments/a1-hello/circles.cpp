@@ -1,6 +1,24 @@
 #include "atkui/framework.h"
 
 using namespace glm;
+
+class Particle {
+  public:
+    float _x;
+    float _y;
+    float _speed;
+    vec3 _col;
+
+    Particle(float x, float y, float speed,vec3 col) {
+      _x = x;
+      _y = y;
+      _speed = speed;
+      _col = col;
+    }
+
+    Particle() {} //default constructor
+};
+
 class Circles : public atkui::Framework
 {
 public:
