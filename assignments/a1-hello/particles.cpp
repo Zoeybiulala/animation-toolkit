@@ -38,7 +38,6 @@ class Particles : public atkui::Framework
   virtual void scene() {
     for (int i =0; i<250;i++) {
       setColor(ps[i]._col);
-      float vel = agl::random() * 5;
       if(ps[i]._x > 500) {
         ps[i]._x = 0;
       } else {
