@@ -1,4 +1,5 @@
 #include "atkui/framework.h"
+#include <cmath>        // std::abs
 using namespace glm;
 
 class Screensaver : public atkui::Framework {
@@ -19,52 +20,62 @@ class Screensaver : public atkui::Framework {
 
   void setup() {
     //curve1
-    BS1 = agl::randomUnitVector() * 500.0f;
-    BS2 = agl::randomUnitVector() * 500.0f;
-    BS3 = agl::randomUnitVector() * 500.0f;
-    BS4 = agl::randomUnitVector() * 500.0f;
+    float w = width();
+    BS0 = vec3(agl::random()*w,agl::random()*w,0);
+    BS1 = vec3(agl::random()*w,agl::random()*w,0);
+    BS2 = vec3(agl::random()*w,agl::random()*w,0);
+    BS3 = vec3(agl::random()*w,agl::random()*w,0);
     
     //curve2
-    BE1 = agl::randomUnitVector() * 500.0f;
-    BE2 = agl::randomUnitVector() * 500.0f;
-    BE3 = agl::randomUnitVector() * 500.0f;
-    BE4 = agl::randomUnitVector() * 500.0f;
+    BE0 = vec3(agl::random()*w,agl::random()*w,0);
+    BE1 = vec3(agl::random()*w,agl::random()*w,0);
+    BE2 = vec3(agl::random()*w,agl::random()*w,0);
+    BE3 = vec3(agl::random()*w,agl::random()*w,0);
 
     //current curve
+    BC0 = BS0;
     BC1 = BS1;
     BC2 = BS2;
     BC3 = BS3;
-    BC4 = BS4;
 
   }
 
   void scene() {
-    setColor(vec3(1,1,1));
-    for (int i=0; i<100; i++){
-      vec3 currP = calcVal(BE1,BE2,BE3,BE4,1/100.0f);
-      drawLine(currP,currP+0.01f);
+
+    for (int i=0; i<500; i++){
+      setColor(vec3(1,1,1));
+      vec3 currP = calcVal(BE0,BE1,BE2,BE3,i/500.0f);
+      drawLine(currP,currP+2.0f);
     }
 
-    duration = 2.0f;
+    for (int i=0; i<500; i++){
+      setColor(vec3(1,0,0));
+      vec3 currP = calcVal(BS0,BS1,BS2,BS3,i/500.0f);
+      drawLine(currP,currP+2.0f);
+    }
+
+    duration = 20.0f;
     t = elapsedTime()/duration;
     t = glm::clamp(t, 0.0f, 1.0f); // clamp to range [0,1]
     
-    BC1 = linearInpo(BC1,BE1,t);
-    BC2 = linearInpo(BC2,BE2,t);
-    BC3 = linearInpo(BC3,BE3,t);
-    BC4 = linearInpo(BC4,BE4,t);
-    
-    setColor(vec3(1,0,0));
-    for (int i=0; i<100; i++){
-      vec3 currP = calcVal(BC1,BC2,BC3,BC4,t);
-      drawLine(currP,currP+0.01f);
+    for (int i=0; i<5; i++){
+      BC0 = linearInpo(BC0,BE0,t);
+      BC1 = linearInpo(BC1,BE1,t);
+      BC2 = linearInpo(BC2,BE2,t);
+      BC3 = linearInpo(BC3,BE3,t);
+      for(int j = 0; j < 500; j++) {
+        setColor(vec3(1,0,0));
+        vec3 currP = calcVal(BC0,BC1,BC2,BC3,j/500.0f);
+        drawLine(currP,currP+2.0f);
+      }
+      
     }
 
   }
   private:
-    vec3 BS1,BS2,BS3,BS4; //starting curve ctrl pts
-    vec3 BE1,BE2,BE3,BE4; //ending curve ctrl pts
-    vec3 BC1,BC2,BC3,BC4; //current curve ctrl pts
+    vec3 BS0,BS1,BS2,BS3; //starting curve ctrl pts
+    vec3 BE0,BE1,BE2,BE3; //ending curve ctrl pts
+    vec3 BC0,BC1,BC2,BC3; //current curve ctrl pts
     float duration;
     float t;
 
