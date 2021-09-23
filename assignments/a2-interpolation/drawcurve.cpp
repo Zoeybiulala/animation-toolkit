@@ -58,9 +58,7 @@ class DrawCubic : public atkui::Framework
       }
     }
     
-    
   }
-
 
   void keyUp(int key, int mod) {
     if (key == GLFW_KEY_1) {
