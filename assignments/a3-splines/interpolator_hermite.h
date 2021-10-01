@@ -58,6 +58,7 @@ public:
         }
 
         if(isClamped()){
+            mCtrlPoints.clear();
             glm::vec3 v0,vn;
             A(0,0) = mClampDir[0]; A(0,1) = mClampDir[1]; A(0,2) = mClampDir[2]; //start point
             A(n,n) = mClampDir[0]; A(n, n-1) = mClampDir[1]; A(n, n-2) = mClampDir[2];  //end point
@@ -75,6 +76,7 @@ public:
             p(n,0) = vn[0]; p(n,1) = vn[1]; p(n,2) = vn[2];
   
         } else { //natural
+            mCtrlPoints.clear();
             glm::vec3 v0,vn;
             A(0,0) = 2; A(0,1) = 1; //start point
             A(n,n) = 2; A(n, n-1) = 1; //end point
