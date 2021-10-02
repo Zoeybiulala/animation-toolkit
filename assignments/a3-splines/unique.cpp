@@ -25,6 +25,11 @@ CurveEditor::CurveEditor() :
 
 CurveEditor::~CurveEditor() {
 }
+vec3 col = vec3(0,0,1);
+bool calcDistance(glm::vec3 p1, glm::vec3 p2) {
+   float a = (p1[0]-p2[0]) * (p1[0]-p2[0]) + (p1[1]-p2[1]) * (p1[1]-p2[1]) + (p1[2]-p2[2]) * (p1[2]-p2[2]);
+   return a<500.0f;
+}
 
 void CurveEditor::setup() {
   listControls();
@@ -70,9 +75,16 @@ void CurveEditor::scene() {
         }
       }
       //draw blue line
-      setColor(keyCol);
+      if(nK > 2){
+         if(!calcDistance(mSpline.getKey(0),mSpline.getKey(nK-1))){
+            setColor(col);
+         } else {
+            setColor(glm::vec3(0,0,1));
+         }
+      }
+      
       for (int t=0; t < 100 * (nK-1); t++){
-        drawLine(mSpline.getValue(t/100.0f),mSpline.getValue(t/100.0f+0.01));
+         drawLine(mSpline.getValue(t/100.0f),mSpline.getValue(t/100.0f+0.01));
       }
     }
 
@@ -145,6 +157,7 @@ void CurveEditor::listControls() {
   std::cout << "a: add mode" << std::endl;
   std::cout << "e: edit mode" << std::endl;
   std::cout << "d: delete mode" << std::endl;
+  std::cout << "q: change color" << std::endl; //support change color !
   std::cout << "SPACEBAR: clear" << std::endl;
 }
 
@@ -261,6 +274,9 @@ void CurveEditor::keyUp(int pKey, int mods) {
   } else if (pKey == 'C') {
     mShowControlPoints = !mShowControlPoints;
 
+  } else if(pKey == 'Q') {
+     col = vec3(agl::random(),agl::random(),agl::random());
+
   } else if (pKey == GLFW_KEY_SPACE) {
     mSpline.clear();
 
@@ -271,6 +287,7 @@ void CurveEditor::keyUp(int pKey, int mods) {
 }
 
 int main(int argc, char** argv) {
-   return 0;
+   CurveEditor viewer;
+	viewer.run();
 }
 
