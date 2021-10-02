@@ -26,21 +26,99 @@ CurveEditor::~CurveEditor() {
 
 void CurveEditor::setup() {
   listControls();
+  keyCol = glm::vec3(0,0,1);
+  ctrlCol =glm::vec3(1,1,0);
 }
 
 void CurveEditor::scene() {
-  drawState();
-  // todo: your code here
-}
+    drawState();
 
+    if(mSpline.getInterpolationType() == "Linear" ){
+
+      mSpline.computeControlPoints();
+      int nC = mSpline.getNumControlPoints();
+      setColor(keyCol);
+      for(int j=0; j<nC; j++) {
+        drawSphere(mSpline.getControlPoint(j),10.0f);
+      }
+      for(int i=0;i<nC-1;i++) {
+        drawLine(mSpline.getKey(i),mSpline.getKey(i+1));
+      }
+
+    } 
+    if(mSpline.getInterpolationType() == "Catmull-Rom") {
+      mSpline.computeControlPoints();
+
+      int nK = mSpline.getNumKeys();
+      for(int i=0;i<nK;i++) {
+        drawSphere(mSpline.getKey(i),10.0f);
+      }
+
+      //draw yellow line
+      if(mShowControlPoints == true) {
+        int nC = mSpline.getNumControlPoints();
+        setColor(ctrlCol);
+        for(int j=0; j<nC; j++) {
+          drawSphere(mSpline.getControlPoint(j),10.0f);
+        }
+        setColor(ctrlCol);
+        for(int j=0; j<nC-1; j++) {
+          drawLine(mSpline.getControlPoint(j),mSpline.getControlPoint(j+1));
+          
+        }
+      }
+      //draw blue line
+      setColor(keyCol);
+      for (int t=0; t < 100 * (nK-1); t++){
+        drawLine(mSpline.getValue(t/100.0f),mSpline.getValue(t/100.0f+0.01));
+      }
+    }
+
+    if(mSpline.getInterpolationType() == "Hermite") {
+      //calculate  + draw the control points
+      int nC = mSpline.getNumControlPoints();
+      if(mShowControlPoints == true) {
+        for(int j=0; j<nC; j++) {
+          if(j % 2 == 0) {
+            setColor(keyCol);
+            drawSphere(mSpline.getControlPoint(j),10.0f);
+            setColor(ctrlCol);
+            drawSphere(mSpline.getControlPoint(j)+mSpline.getControlPoint(j+1),10.0f);
+          } 
+        }
+        for(int k =0; k<nC-1; k++) {
+          if(k % 2 == 0) {
+            drawLine(mSpline.getControlPoint(k),mSpline.getControlPoint(k)+mSpline.getControlPoint(k+1));
+          } 
+        }
+      } else {
+        setColor(keyCol);
+        int nK = mSpline.getNumKeys();
+        setColor(keyCol);
+        for(int i=0;i<nK; i++) {
+          drawSphere(mSpline.getKey(i),10.0f);
+        } 
+      }
+      setColor(keyCol);
+      int nK = mSpline.getNumKeys();
+      for(int t=0; t< 100 * (nK-1); t++ ){
+        drawLine(mSpline.getValue(t/100.0f),mSpline.getValue(t/100.0f+0.01));
+      }
+    }
+  
+}
+//when deleting, this method kinda messed up
 void CurveEditor::addPoint(const vec3& p) {
   //std::cout << "Add key: " << p << std::endl;
   mSpline.appendKey(mSpline.getNumKeys(), p);
+  mSpline.computeControlPoints();
 }
 
 void CurveEditor::deletePoint(int key) {
   if (mShowControlPoints) return;
+  if(key == -1) return; //avoid abort 6 when there is no key to delete
   mSpline.deleteKey(key);
+  mSpline.computeControlPoints();
 }
 
 void CurveEditor::drawState() {
@@ -77,11 +155,12 @@ void CurveEditor::mouseMotion(int pX, int pY, int dx, int dy) {
     if (mShowControlPoints) {
       if (mSpline.getInterpolationType() == "Hermite" && mSelected % 2 == 1) {
         mSpline.editControlPoint(mSelected, p-mSpline.getControlPoint(mSelected-1));
-      } else {
+      }
+      if(mSpline.getInterpolationType() == "Catmull-Rom"){
         mSpline.editControlPoint(mSelected, p);
       }
-    }
-    else mSpline.editKey(mSelected, p);
+      
+    } else mSpline.editKey(mSelected, p);
   }
 }
 

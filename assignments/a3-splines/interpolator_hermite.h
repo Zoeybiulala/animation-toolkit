@@ -46,74 +46,95 @@ public:
 
     virtual void computeControlPoints(const std::vector<glm::vec3>& keys) {
         int size = keys.size();
-        int n = size-1;
-        Eigen::MatrixXd A(size, size);
-        Eigen::MatrixXd p(size, 3);
-        Eigen::MatrixXd pPrime(size, 3); // slopes for each control point
-        //initialize Matrix A with all 0
-        for(int i=0; i< size; i++) {
-            for (int j =0; j< size ; j++) {
-                A(i,j) = 0;
-            }
-        }
-
-        if(isClamped()){
+        if(size <= 1){
             mCtrlPoints.clear();
-            glm::vec3 v0,vn;
-            A(0,0) = mClampDir[0]; A(0,1) = mClampDir[1]; A(0,2) = mClampDir[2]; //start point
-            A(n,n) = mClampDir[0]; A(n, n-1) = mClampDir[1]; A(n, n-2) = mClampDir[2];  //end point
-
-            v0 = mClampDir;
-            p(0,0) = v0[0]; p(0,1) = v0[1]; p(0,2) = v0[2];
-
-            glm::vec3 v;
-            for(int i=1;i<size;i++){
-                v = 3.0f * (keys[i+1]-keys[i-1]);
-                p(i,0) = v[0]; p(i,1) = v[1]; p(i,2) = v[2];
+        } else if(size == 2) {
+            if(isClamped()){
+                mCtrlPoints.clear();
+                mCtrlPoints.push_back(keys[0]);
+                mCtrlPoints.push_back(mClampDir);
+                mCtrlPoints.push_back(keys[1]);
+                mCtrlPoints.push_back(mClampDir);
+            } else{
+                mCtrlPoints.clear();
+                mCtrlPoints.push_back(keys[0]);
+                mCtrlPoints.push_back(3.0f * (keys[1]-keys[0]));
+                mCtrlPoints.push_back(3.0f * (keys[1]-keys[0]));
+                mCtrlPoints.push_back(keys[1]);
             }
-
-            vn = mClampDir;
-            p(n,0) = vn[0]; p(n,1) = vn[1]; p(n,2) = vn[2];
-  
-        } else { //natural
+        } else {
             mCtrlPoints.clear();
-            glm::vec3 v0,vn;
-            A(0,0) = 2; A(0,1) = 1; //start point
-            A(n,n) = 2; A(n, n-1) = 1; //end point
-
-            v0 = 3.0f * (keys[1]-keys[0]);
-            p(0,0) = v0[0]; p(0,1) = v0[1]; p(0,2) = v0[2];
-
-            glm::vec3 v;
-            for(int i=1;i<size;i++){
-                v = 3.0f * (keys[i+1]-keys[i-1]);
-                p(i,0) = v[0]; p(i,1) = v[1]; p(i,2) = v[2];
+            int n = size-1;
+            Eigen::MatrixXd A(size, size);
+            Eigen::MatrixXd p(size, 3);
+            Eigen::MatrixXd pPrime(size, 3); // slopes for each control point
+            //initialize Matrix A with all 0
+            for(int i=0; i< size; i++) {
+                for (int j =0; j< size ; j++) {
+                    A(i,j) = 0;
+                }
             }
-            
-            vn = 3.0f * (keys[n]-keys[n-1]);
-            p(n,0) = vn[0]; p(n,1) = vn[1]; p(n,2) = vn[2];
 
-        }
-        //common parts of matrix A
-        int j = 0;
-        for(int i=1; i<n;i++){
-                A(i,j) = 1;
-                A(i,j+2) = 1;
-                j++;
-        }
-        for(int i=1; i<n;i++){
-            A(i,i) = 4;
-        }
+            if(isClamped()){
+                mCtrlPoints.clear();
+                glm::vec3 v0,vn;
+                A(0,0) = mClampDir[0]; A(0,1) = mClampDir[1]; A(0,2) = mClampDir[2]; //start point
+                A(n,n) = mClampDir[0]; A(n, n-1) = mClampDir[1]; A(n, n-2) = mClampDir[2];  //end point
+                
+                 
+                v0 = mClampDir;
+                p(0,0) = v0[0]; p(0,1) = v0[1]; p(0,2) = v0[2];
+
+                glm::vec3 v;
+                for(int i=1;i<size;i++){
+                    v = 3.0f * (keys[i+1]-keys[i-1]);
+                    p(i,0) = v[0]; p(i,1) = v[1]; p(i,2) = v[2];
+                }
+
+                vn = mClampDir;
+                p(n,0) = vn[0]; p(n,1) = vn[1]; p(n,2) = vn[2];
     
-        pPrime = A.inverse() * p; //calculate the slopes
+            } else { //natural
+                mCtrlPoints.clear();
+                glm::vec3 v0,vn;
+                A(0,0) = 2; A(0,1) = 1; //start point
+                A(n,n) = 2; A(n, n-1) = 1; //end point
 
-        //generate control points
-        glm::vec3 b;
-        for(int i=0; i< size;i++){
-            b = glm::vec3(pPrime(i,0),pPrime(i,1),pPrime(i,2));
-            mCtrlPoints.push_back(keys[i]);
-            mCtrlPoints.push_back(b);
+                v0 = 3.0f * (keys[1]-keys[0]);
+                p(0,0) = v0[0]; p(0,1) = v0[1]; p(0,2) = v0[2];
+
+                glm::vec3 v;
+                for(int i=1;i<size;i++){
+                    v = 3.0f * (keys[i+1]-keys[i-1]);
+                    p(i,0) = v[0]; p(i,1) = v[1]; p(i,2) = v[2];
+                }
+                
+                vn = 3.0f * (keys[n]-keys[n-1]);
+                p(n,0) = vn[0]; p(n,1) = vn[1]; p(n,2) = vn[2];
+
+            }
+            //common parts of matrix A
+            int j = 0;
+            for(int i=1; i<n;i++){
+                    A(i,j) = 1;
+                    A(i,j+2) = 1;
+                    j++;
+            }
+            for(int i=1; i<n;i++){
+                A(i,i) = 4;
+            }
+        
+            pPrime = A.inverse() * p; //calculate the slopes
+
+            //generate control points
+            glm::vec3 b;
+            for(int i=0; i< size;i++){
+                b = glm::vec3(pPrime(i,0),pPrime(i,1),pPrime(i,2));
+                mCtrlPoints.push_back(keys[i]);
+                mCtrlPoints.push_back(b);
+            }
         }
+
         
       
     }

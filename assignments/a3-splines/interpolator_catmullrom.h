@@ -28,7 +28,15 @@ public:
     }
 
     virtual void computeControlPoints(const std::vector<glm::vec3>& keys) {
+       
+       mCtrlPoints.clear();
        int size = keys.size();
+       if(size == 0){
+          mCtrlPoints.clear();
+       }
+       if(size == 1) {
+          mCtrlPoints.push_back(keys[0]);
+       }
        int n = keys.size()-1; // n is the the last element's index and also the number of segments
        glm::vec3 b_0,b_1,b_2,b_3;
        for(int i=0; i < n; i++) {

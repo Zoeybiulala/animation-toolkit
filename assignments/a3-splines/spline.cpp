@@ -42,10 +42,16 @@ int Spline::appendKey(float time, const glm::vec3& value) {
   return mKeys.size();
 }
 
+
+//updated this method because there would be descrepency in mTime array (i want it to be exactly [0,1] from
+//one index to another)
 void Spline::deleteKey(int keyID) {
   assert(keyID >= 0 && keyID < (int) mKeys.size());
   mKeys.erase(mKeys.begin() + keyID);
   mTimes.erase(mTimes.begin() + keyID);
+  for(int i=keyID; i<mTimes.size();i++){
+    mTimes[i]--;
+  }
   mDirty = true;
 }
 
@@ -119,6 +125,5 @@ glm::vec3 Spline::getValue(float t) const {
   }
   t = (t-mTimes[seg]) / (mTimes[seg+1] - mTimes[seg]);
   return mInterpolator->interpolate(seg,t);
-  
 }
 
