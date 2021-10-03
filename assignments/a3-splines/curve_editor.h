@@ -33,6 +33,8 @@ class CurveEditor : public atkui::Framework {
   int mRadius;
   int mSelected;
   int mButtonState;
+  glm::vec3 keyCol;
+  glm::vec3 ctrlCol;
 
   enum Mode { ADD, EDIT, REMOVE } mMode;
   bool mShowControlPoints;
