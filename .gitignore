@@ -88,9 +88,6 @@ Release-soln/
 bin/*.exe
 lib/*
 Warrok.fbm/
-<<<<<<< HEAD
 *.swo
 .DS_Store
-=======
 *.swo
->>>>>>> source/main

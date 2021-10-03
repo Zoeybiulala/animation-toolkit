@@ -2,6 +2,7 @@
 #include "spline.h"
 #include "math.h"
 #include "interpolator_linear.h"
+#include <iostream>
 
 // global interpolator to use as default
 static InterpolatorLinear gDefaultInterpolator; 
@@ -98,13 +99,26 @@ void Spline::editControlPoint(int id, const glm::vec3& v) {
 glm::vec3 Spline::getValue(float t) const {
   if (mDirty) 
   {
-    mInterpolator->computeControlPoints(mKeys);
+    mInterpolator->computeControlPoints(mKeys); 
     mDirty = false;
   }
-
-  // todo: your code here
-  // compute the segment containing t
-  // compute the value [0, 1] along the segment for interpolation
-  return glm::vec3(0); 
+  
+  if(getDuration() != 0) {
+    if(t <0) {t = 0;} //clamp time
+    if(t >getDuration()) {t = getDuration();} //clamp time
+  } else {
+    t = 0;
+  }
+  if(getNumKeys() == 0) {
+    return glm::vec3(0);
+  }
+  
+  int seg = 0;
+  while(mTimes.size() > seg+1 && mTimes[seg + 1] < t){
+    seg++;
+  }
+  t = (t-mTimes[seg]) / (mTimes[seg+1] - mTimes[seg]);
+  return mInterpolator->interpolate(seg,t);
+  
 }
 

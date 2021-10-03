@@ -62,7 +62,7 @@ class Unique : public atkui::Framework {
     float theta;
     float thetaRate;
     float r;
-    Particle pArray[100];
+    Particle pArray[150];
 };
 
 int main(int argc, char** argv) {
