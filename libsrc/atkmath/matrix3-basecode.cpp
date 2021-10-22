@@ -1,5 +1,6 @@
 #include "atkmath/matrix3.h"
 #include "atkmath/quaternion.h"
+#include <algorithm>    // std::max
 
 using namespace glm;
 namespace atkmath {
@@ -147,13 +148,57 @@ namespace atkmath {
 
    void Matrix3::toAxisAngle(Vector3& axis, double& angleRad) const
    {
-      // TODO
+      float wSquare = 0.25 * (m11 + m22 + m33 + 1);
+      float xSquare = 0.25 * (1 + m11 - m22 - m33);
+      float ySquare = 0.25 * (1 - m11 + m22 - m33);
+      float zSquare = 0.25 * (1 - m11 - m22 + m33);
+      float max = std::max(std::max(wSquare,xSquare),std::max(ySquare,zSquare));
+      float wx = 0.25 * (m32-m23);
+      float wy = 0.25 * (m13-m31);
+      float wz = 0.25 * (m21-m12);
+      float xy = 0.25 * (m21+m12);
+      float xz = 0.25 * (m13+m31);
+      float yz = 0.25 * (m23+m32);
+      float x,y,z,w  = 0.0;
+      if(max == wSquare) {
+         w = sqrt(wSquare);
+         x = wx/w;
+         y = wy/w;
+         z = wz/w;
+      } else if(max == xSquare) {
+         x = sqrt(xSquare);
+         w = wx/x;
+         y = xy/x;
+         z = xz/x;
+      } else if(max == ySquare){ 
+         y = sqrt(ySquare);
+         w = wy/y;
+         x = xy/y;
+         z = yz/y;
+      } else{
+         z = sqrt(zSquare);
+         w = wz/z;
+         x = xz/z;
+         y = yz/z;
+      }
+
+      angleRad = acos(w)/2;
+      axis[0] = x/sin(angleRad/2);
+      axis[1] = y/sin(angleRad/2);
+      axis[2] = z/sin(angleRad/2);
+
    }
 
    void Matrix3::fromAxisAngle(const Vector3& axis, double angleRad)
-   {
-      // TODO
-      *this = Identity;
+   {  
+      float x = axis[0];
+      float y = axis[1];
+      float z = axis[2];
+      float c = cos(angleRad);
+      float s = sin(angleRad);
+      *this = Matrix3(c+(1-c)*x*x, -s*z + (1-c)*x*y, y * s + x*z*(1-c),
+                           -z*s + (1-c)*x*y, c+ (1-c)*y*y, -x*s+(1-c) *y*z,
+                           s*y + (1-c) *x*y, -x*s+(1-c)*y*z, c+ (1-c) *z *z);
    }
 
    
