@@ -16,6 +16,7 @@ void Quaternion::toAxisAngle (Vector3& axis, double& angleRad) const
 	axis[0] = mX/sin(angleRad/2);
 	axis[1] = mY/sin(angleRad/2);
 	axis[2] = mZ/sin(angleRad/2);
+   axis.normalize();
 }
 
 void Quaternion::fromAxisAngle (const Vector3& axis, double angleRad)
