@@ -1,5 +1,6 @@
 #include "atkui/framework.h"
 #include "atk/toolkit.h"
+#include <math.h>
 
 using atk::Transform;
 using glm::quat;
@@ -18,39 +19,41 @@ public:
    void scene()
    {
       // Question 1 - B1
-      vec3 d10 = vec3(0);
+      vec3 d10 = vec3(-2,0,1);
       quat R10 = glm::angleAxis(0.f, vec3(1,0,0));
       Transform F10(R10, d10); // transform from frame 1 to world
       setColor(vec3(0,0.5,0));
       drawBox(F10);
 
       // Question 1 - B2
-      vec3 d20 = vec3(0);
-      quat R20 = glm::angleAxis(0.f, vec3(1,0,0));
+      vec3 d20 = vec3(4,0,2);
+      quat R20 = glm::angleAxis((float)M_PI/4, vec3(0,0,1));
       Transform F20(R20, d20); // transform from frame 2 to world
       setColor(vec3(0.5,0, 0.5));
       drawBox(F20);
 
       // Question 1 - B3
-      vec3 d30 = vec3(0);
-      quat R30 = glm::angleAxis(0.f, vec3(1,0,0));
+      vec3 d30 = vec3(5,4,2);
+      quat R30 = glm::angleAxis((float)M_PI/2, vec3(0,0,1));
       Transform F30(R30, d30); // transform from frame 3 to world
       setColor(vec3(0.0, 0.5,0.5));
       drawBox(F30);
 
       // Question 2
-      Transform F21 = Transform::Identity; // transform from frame 2 to frame 1
+
+      Transform F21 = F10.inverse()* F20; // transform from frame 2 to frame 1
       vec3 value = F21.transformPoint(vec3(0));
       if (!once) std::cout << "Position of b2 relative to b1 is " << value << std::endl;
 
       // Question 3
-      Transform F32 = Transform::Identity; // transform from frame 3 to frame 2
+      Transform F32 = F21.inverse()*F10.inverse()*F30; // transform from frame 3 to frame 2
       value = F32.transformPoint(vec3(0));
       if (!once) std::cout << "Position of b3 relative to b2 is " << value << std::endl;
 
       // Question 4
       // Compute a series of transforms that stack Box 2 onto Box 1
-      Transform F = Transform::Identity;
+      quat Iden = glm::angleAxis((float)-M_PI/4,vec3(0,0,1));
+      Transform F = Transform(Iden,vec3(-2-2*sin(45),2+2*sin(45),1));
       setColor(vec3(0.5, 0.5,0.5));
       drawBox(F * F20);
 
@@ -65,7 +68,7 @@ public:
       push();
       scale(vec3(10));
       transform(xform);
-      translate(halfSize);
+      translate(halfSize); //why?
       drawCube(vec3(0), size);
       pop();
 
