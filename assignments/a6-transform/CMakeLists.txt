@@ -12,3 +12,6 @@ target_link_libraries(a6-skeleton-practice ${LIBS})
 
 add_executable(a6-tentacle tentacle.cpp)
 target_link_libraries(a6-tentacle ${LIBS})
+
+add_executable(a6-unique unique.cpp)
+target_link_libraries(a6-unique ${LIBS})

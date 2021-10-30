@@ -52,10 +52,11 @@ public:
 
       // Question 4
       // Compute a series of transforms that stack Box 2 onto Box 1
-      quat Iden = glm::angleAxis((float)-M_PI/4,vec3(0,0,1));
-      Transform F = Transform(Iden,vec3(-2-2*sin(45),2+2*sin(45),1));
+      quat rot_reverse = glm::angleAxis(0.f, vec3(0,0,1));
+      vec3 displacement = vec3(0,2,0);
+      Transform F = Transform(rot_reverse,displacement) * F10;
       setColor(vec3(0.5, 0.5,0.5));
-      drawBox(F * F20);
+      drawBox(F);
 
       once = true;
    }
