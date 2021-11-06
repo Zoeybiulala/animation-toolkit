@@ -18,15 +18,26 @@ public:
       BVHReader reader;
       reader.load("../motions/Warrok/WarrokThriller.bvh", _skeleton, _motion);
 
-      vec3 position = vec3(0);
+      vec3 pos = vec3(0);
       vec3 color = vec3(1,0,0);
       float size = 1.0f;
-      _devil = Devil(position, color, size);
+      for(int i=0;i<3;i++) {
+         for(int j =0; j<4;j++) {
+            pos = vec3(i*200+agl::random()*20,0,j*200+agl::random()*20);
+            color = vec3(agl::random(),agl::random(),agl::random());
+            size = agl::random()+0.25;
+            devils.push_back(Devil(pos, color, size));
+         }
+      }
+      
    }
 
    virtual void scene() {
       if (!_paused) _motion.update(_skeleton, elapsedTime());
-      _devil.draw(_skeleton, *this);
+      for(Devil devil: devils) {
+         devil.draw(_skeleton, *this);
+      }
+      
    }
 
    virtual void keyUp(int key, int mods) {
@@ -38,6 +49,7 @@ protected:
    Skeleton _skeleton;
    bool _paused = false;
    Devil _devil;
+   std::vector<Devil> devils;
 };
 
 int main(int argc, char** argv) {

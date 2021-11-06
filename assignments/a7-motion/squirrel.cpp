@@ -44,36 +44,52 @@ class Squirrel : public atkui::Framework {
       rotate(body.rotation, vec3(0,0,1));
 
       // todo tail
-      //push();
-        //drawSprite(tail);
-      //pop();
+      push();
+        translate(vec3(-80,-110,-2));
+        rotate(tail.rotation,vec3(0,0,1));
+        translate(-tail.pivot);
+        drawSprite(tail);
+      pop();
 
       // arm1
-      //push();
-        //drawSprite(arm1);
-      //pop();
+      push();
+        translate(vec3(35,0,-5));
+        rotate(arm1.rotation,vec3(0,0,1));
+        translate(-arm1.pivot);
+        drawSprite(arm1);
+      pop();
 
       // leg2
-      //push();
-        //drawSprite(leg2);
-      //pop();
+      push();
+        translate(vec3(35,-110,-1));
+        rotate(leg2.rotation,vec3(0,0,1));
+        translate(-leg2.pivot);
+        drawSprite(leg2);
+      pop();
 
 
       // body
       push();
+      rotate(body.rotation,vec3(0,0,1));
       translate(-body.pivot);
       drawSprite(body);
       pop();
     
       // leg1
-      //push();
-        //drawSprite(leg1);
-      //pop();
+      push();
+        translate(vec3(-55,-110,1));
+        rotate(leg1.rotation,vec3(0,0,1));
+        translate(-leg1.pivot);
+        drawSprite(leg1);
+      pop();
     
       // arm2
-      //push();
-        //drawSprite(arm2);
-      //pop();
+      push();
+        translate(vec3(-65,0,3));
+        rotate(arm2.rotation,vec3(0,0,1));
+        translate(-arm2.pivot);
+        drawSprite(arm2);
+      pop();
     pop(); 
 
     renderer.fontColor(vec4(0,0,0,1));
@@ -121,7 +137,7 @@ class Squirrel : public atkui::Framework {
       for (int i = 0; i < key; i++) it++;
       _selected = it->first;
     } 
-    //std::cout << "selected: " << keyChar << " " << key << " " << _selected << std::endl;
+    // std::cout << "selected: " << keyChar << " " << key << " " << _selected << std::endl;
 
     if (keyChar == GLFW_KEY_UP) {
       _sprites[_selected].rotation += 0.1;
