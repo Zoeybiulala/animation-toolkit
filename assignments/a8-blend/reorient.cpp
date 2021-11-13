@@ -28,14 +28,21 @@ public:
       _reoriented = reorient(_motion, _offset, _heading);
    }
 
+   //heading is the angle around y axis
    Motion reorient(const Motion& motion, const vec3& pos, float heading)
    {
       Motion result;
       result.setFramerate(motion.getFramerate());
 
       // todo: your code here
-      Pose pose = motion.getKey(0);
-      result.appendKey(pose);
+      Pose curr;
+      for(int i=0; i<motion.getNumKeys(); i++){
+         curr = motion.getKey(i);
+         curr.jointRots[0] = eulerAngleRO(XYZ, vec3(0, heading, 0)); //root rotation
+         vec3 offset = curr.rootPos * eulerAngleRO(XYZ,vec3(0,-heading,0));
+         curr.rootPos = pos + offset;//root positiaon
+         result.appendKey(curr);
+      }
       
       return result;
    }

@@ -15,7 +15,7 @@ public:
    virtual ~ABlend() {}
 
    void setup()
-   {
+   {  
       _alpha = 0.5;
       BVHReader reader;
       reader.load("../motions/Beta/left_strafe_walking.bvh", _skeleton, _motion1);
@@ -30,7 +30,16 @@ public:
       blend.setFramerate(m1.getFramerate());
 
       // todo: replace the following line with your code
-      blend.appendKey(m1.getKey(0)); // placeholder
+      double duration = m1.getDuration()*(1-_alpha) + m2.getDuration()*_alpha;
+      fps = blend.getFramerate();
+      deltaT = 1/fps;
+      for(float i=0; i<= duration;i+=deltaT){
+         Pose p1 = m1.getValue(i);
+         Pose p2 = m2.getValue(i);
+         Pose temp = Pose::Lerp(p1,p2,_alpha);
+         blend.appendKey(temp);
+      }
+   
       return blend;
    }
 
@@ -73,6 +82,8 @@ protected:
    Motion _motion1;
    Motion _motion2;
    double _alpha;
+   float fps;
+   float deltaT;
 };
 
 int main(int argc, char** argv)

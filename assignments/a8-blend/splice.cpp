@@ -24,12 +24,36 @@ public:
       _splice = spliceUpperBody(_lower, _upper, _alpha);
    }
 
+   //returns a new motion such that the lower body matches the motion in "lower", 
+   //the upper body is the result of blending the upper body motion with
+   //the original's upper body motion, e.g. new upper = upper * (1-alpha) + lower*alpha
    Motion spliceUpperBody(const Motion& lower, const Motion& upper, float alpha)
    {
-      Motion result;
+       Motion result;
       result.setFramerate(lower.getFramerate());
-      // todo: your code here
-      result.appendKey(lower.getKey(0));
+      //BFS for the subtree
+      Joint* curr = _skeleton.getByName("Beta:Spine1");
+      std::deque<int> q;
+      std::vector<int> ids;
+      q.push_back(curr->getID());
+      while(!q.empty()) { 
+          curr = _skeleton.getByID(q.front());
+          q.pop_front();
+          ids.push_back(curr->getID());
+          for (int i = 0; i < curr->getNumChildren(); i++) {
+              q.push_back(curr->getChildAt(i)->getID());
+          }
+      }
+      for (int i = 0; i < lower.getNumKeys(); i++) {
+          Pose lowerPose = lower.getKey(i);
+          Pose upperPose = upper.getKey(i+110);
+
+          for (int j = 0; j < ids.size(); j++) {
+              lowerPose.jointRots[ids[j]] =
+               glm::slerp(upperPose.jointRots[ids[j]], lowerPose.jointRots[ids[j]], alpha);
+          }
+          result.appendKey(lowerPose);
+      }
       return result;
    }
 
