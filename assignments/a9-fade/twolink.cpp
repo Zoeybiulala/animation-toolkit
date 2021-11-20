@@ -38,11 +38,11 @@ class AIKSimple : public atkui::Framework
 
     Joint *elbow = new Joint("Elbow");
     mActor.addJoint(elbow, shoulder);
-    elbow->setLocalTranslation(vec3(100, 0, 0));
+    elbow->setLocalTranslation(vec3(100, 0, 0)); //l1 = 100
 
     Joint *wrist = new Joint("Wrist");
     mActor.addJoint(wrist, elbow);
-    wrist->setLocalTranslation(vec3(80, 0, 0));
+    wrist->setLocalTranslation(vec3(80, 0, 0)); //l2 = 80
 
     mActor.fk();
     mGoalPosition = wrist->getGlobalTranslation();
@@ -126,8 +126,66 @@ class AIKSimple : public atkui::Framework
 
   void solveIKTwoLink(Skeleton &skeleton, const vec3 &goalPosition)
   {
-    // todo: implement two link IK algorithm
+    /*
+    float l1 = length(skeleton.getByID(1)->getLocalTranslation());
+      float l2 = length(skeleton.getByID(2)->getLocalTranslation());
+
+      float r = length(goalPosition - skeleton.getByID(0)->getGlobalTranslation());
+
+      float cphi = (r * r - l1 * l1 - l2 * l2) / (-2.0f * l1 * l2);
+
+      cphi = max(min(cphi, 1.0f), -1.0f); // clamps cphi
+      float phi = acos(cphi);
+
+      float theta2z = phi - pi<float>();
+
+      float sTheta1z = -(l2)*sin(theta2z) / r;
+      sTheta1z = max(min(sTheta1z, 1.0f), -1.0f);
+
+      float theta1z = asin(sTheta1z);
+
+      float beta = atan2(-(goalPosition.z - skeleton.getByID(0)->getGlobalTranslation().z), (goalPosition.x - skeleton.getByID(0)->getGlobalTranslation().x));
+      float gamma = asin(max(min((goalPosition.y - skeleton.getByID(0)->getGlobalTranslation().y) / r, 1.0f), -1.0f));
+
+      quat Ry = angleAxis(beta, vec3(0, 1, 0));
+      quat RzGamma = angleAxis(gamma, vec3(0, 0, 1));
+      quat RzTheta1 = angleAxis(theta1z, vec3(0, 0, 1));
+
+      Transform F10(Ry * RzGamma * RzTheta1, skeleton.getByID(0)->getLocalTranslation());
+      Transform F21(angleAxis(theta2z, vec3(0, 0, 1)), skeleton.getByID(1)->getLocalTranslation());
+      Transform F32(angleAxis(0.0f, vec3(0, 0, 1)), skeleton.getByID(2)->getLocalTranslation());
+
+      skeleton.getByID(0)->setLocal2Parent(F10);
+      skeleton.getByID(1)->setLocal2Parent(F21);
+      skeleton.getByID(2)->setLocal2Parent(F32);
+      skeleton.fk();
+    */
+    float l1 = length(skeleton.getByName("Elbow")->getLocalTranslation());
+    float l2 = length(skeleton.getByName("Wrist")->getLocalTranslation());
+    float r = length(goalPosition);
+
+    float cos_phi = clamp((r * r - l1 * l1 - l2 * l2) / (-2.0f * l1 * l2),-1.0f,1.0f);
+    float theta2z = acos(cos_phi)-pi<float>(); //in radian
+    float theta1z = asin((-1 * l2 * sin(theta2z))/r);
+    
+    float gamma = asin(goalPosition[1]/r);
+    float beta = atan2(-1 * goalPosition[2], goalPosition[0]);
+
+    quat Rz_theta2z = angleAxis(theta2z, vec3(0, 0, 1));
+    quat Ry_beta = angleAxis(beta, vec3(0, 1, 0));
+    quat Rz_Gamma = angleAxis(gamma, vec3(0, 0, 1));
+    quat Rz_theta1z = angleAxis(theta1z, vec3(0, 0, 1));
+
+
+    skeleton.getByName("Shoulder")->setLocalRotation(Ry_beta*Rz_Gamma*Rz_theta1z);
+    skeleton.getByName("Elbow")->setLocalRotation(Rz_theta2z);
+    
+    
+    skeleton.fk();
+
+    
   }
+
 
  private:
   atk::Skeleton mActor;

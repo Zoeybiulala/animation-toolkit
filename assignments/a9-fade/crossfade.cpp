@@ -36,8 +36,47 @@ public:
 
     int start1 = motion1_.getNumKeys() - numBlendFrames;
     int start2 = 0;
+    blend_.setFramerate(motion2_.getFramerate());
 
-    // TODO: Your code here
+    Pose current;
+    
+    
+
+    for(int i=0; i< start1; i++) {
+        current = motion1_.getKey(i);
+        blend_.appendKey(current);
+    }
+    
+    reorient();
+    for (int k = 0; k< numBlendFrames; k++) {
+      float alpha  = k/numBlendFrames;
+      current = Pose::Lerp(motion1_.getKey(start1 + k), 
+                             motion2_.getKey(start2 + k),alpha);
+      blend_.appendKey(current);
+    } 
+    
+
+    for(int i = numBlendFrames; i< motion2_.getNumKeys();i++) {
+      current = motion2_.getKey(i);
+      blend_.appendKey(current);
+    }
+
+    
+  }
+
+
+  void reorient() {
+    Pose motion2_start = motion2_.getKey(0);
+    Pose motion1_start = motion1_.getKey(motion1_.getNumKeys()-1); //use start1 seems weird??
+    Transform T1 = Transform(motion2_start.jointRots[0],motion2_start.rootPos);
+    Transform T_desired = Transform(motion1_start.jointRots[0], motion1_start.rootPos);
+    Transform T_offset = T_desired * T1.inverse();
+    for(int i=0; i<motion2_.getNumKeys(); i++) {
+      Pose newPose = motion2_.getKey(i);
+      newPose.rootPos = T_offset.transformPoint(newPose.rootPos);
+      motion2_.editKey(i,newPose);
+    }
+
   }
 
   void save(const std::string &filename)

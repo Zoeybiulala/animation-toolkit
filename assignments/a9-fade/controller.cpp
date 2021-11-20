@@ -18,6 +18,7 @@ public:
     BVHReader reader;
     reader.load("../motions/Beta/walking.bvh", _skeleton, _walk);
     _drawer.showAxes = true;
+    pos = vec3(0);
   }
 
   virtual void scene()
@@ -43,10 +44,20 @@ public:
   {
     _walk.update(_skeleton, elapsedTime());
 
-    // TODO: Your code here
+    // TODO: Your code 
+    
+    Pose curr = _skeleton.getPose();
+    //pin the skeleton at first key
+    curr.rootPos = vec3(0,curr.rootPos.y,0) + pos;
+    pos += vec3(2 * sin(_heading),0,2*cos(_heading));
+    //rotate with heading
+    curr.jointRots[0] *= glm::angleAxis(_heading, vec3(0, 1, 0));
+    _skeleton.setPose(curr);
 
     // TODO: Override the default camera to follow the character
-    // lookAt(pos, look, vec3(0, 1, 0));
+    globalLookPos = _skeleton.getByName("Beta:Head")->getGlobalTranslation();
+    globalPos = globalLookPos + vec3(-250*sin(_heading),100,-250*cos(_heading));
+    lookAt(globalPos, globalLookPos, vec3(0, 1, 0));
 
     // update heading when key is down
     if (keyIsDown('D')) _heading -= 0.05;
@@ -59,6 +70,10 @@ protected:
   Motion _walk;
   Skeleton _skeleton;
   atkui::SkeletonDrawer _drawer;
+
+  vec3 globalPos;
+  vec3 globalLookPos;
+  vec3 pos;
 };
 
 int main(int argc, char **argv)
