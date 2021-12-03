@@ -13,6 +13,7 @@ public:
         int jointid, const glm::vec3& goalPos, 
         const std::vector<atk::Joint*>& chain, float threshold = 10.0, 
         int maxIters = 50, float nudgeFactor = 0.1); 
+
 };
 
 #endif

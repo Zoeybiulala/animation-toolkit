@@ -27,6 +27,44 @@ bool IKController::solveIKAnalytic(Skeleton& skeleton,
   Joint* hip = knee->getParent();
 
   // TODO: Your code here
+  //from twolink
+  Joint* endEff = skeleton.getByID(jointid);
+  Joint* jointPar = endEff->getParent();
+  Joint* jointGran = jointPar->getParent();
+
+  float l1 = length(endEff->getLocalTranslation());
+  float l2 = length(jointPar->getLocalTranslation());
+  float r = length(goalPos - jointGran->getGlobalTranslation());
+
+  float cos_phi = clamp((r * r - l1 * l1 - l2 * l2) / (-2.0f * l1 * l2),-1.0f,1.0f);
+  float theta2z = acos(cos_phi)-pi<float>(); //in radian
+
+  vec3 limbDir = normalize(jointPar->getLocalTranslation());
+  vec3 axis = cross(limbDir, vec3(0,0,-1));
+  if (limbDir[1] < 0) axis = cross(limbDir, vec3(0,0,1));
+
+  quat Rz_theta2z = angleAxis(theta2z, axis);
+  Transform F21(Rz_theta2z, jointPar->getLocalTranslation());
+  jointPar->setLocal2Parent(F21);
+  skeleton.fk();
+  
+  vec3 pos = endEff->getGlobalTranslation();
+  vec3 r1 = pos - jointGran->getGlobalTranslation();
+  vec3 e1 = goalPos - pos;
+
+  axis = normalize(cross(r1,e1));
+  if (length(cross(r1,e1)) == 0) {
+      axis = vec3(0, 0, 1);
+  }
+  float angle = atan2((double)length(cross(r1,e1)),(double)(dot(r1,r1)+dot(r1,e1)));
+
+  axis = jointGran->getLocal2Global().inverse().transformVector(axis);
+  // curr->getParent()->setLocalRotation(rot);//only curr also don't work
+  Transform F = Transform(angleAxis(angle, axis), vec3(0));
+  jointGran->setLocal2Parent(jointGran->getLocal2Parent() * F);
+
+  skeleton.fk();
+  
   return true;
 }
 
@@ -36,6 +74,36 @@ bool IKController::solveIKCCD(Skeleton& skeleton, int jointid,
   // There are no joints in the IK chain for manipulation
   if (chain.size() == 0) return true;
 
-  // TODO: Your code here
+  //TODO: Your code here
+  Joint* endEff = skeleton.getByID(jointid);
+  vec3 pos = endEff->getGlobalTranslation();
+  int i = 0; 
+
+  while(distance(goalPos,pos) > threshold && i< maxIters){
+    for (int i = 1; i < chain.size(); i++) { //exclude the end effector
+      Joint * curr = chain[i];
+      vec3 currPos = curr->getGlobalTranslation();
+
+      vec3 e = goalPos - pos;
+      vec3 r = pos - currPos;
+      vec3 axis = normalize(cross(r,e));
+      if (length(cross(r,e)) == 0) {
+              axis = vec3(0, 0, 1);
+          }
+
+      float nudge = nudgeFactor * atan2((double)length(cross(r,e)),(double)(dot(r,r)+dot(r,e)));
+      quat rot = angleAxis(nudge, axis);//global
+
+      axis = curr->getLocal2Global().inverse().transformVector(axis);
+      // curr->getParent()->setLocalRotation(rot);//only curr also don't work
+      Transform F = Transform(angleAxis(nudge, axis), vec3(0));
+      curr->setLocal2Parent(curr->getLocal2Parent() * F);
+
+      skeleton.fk();
+      pos = endEff->getGlobalTranslation();
+    }
+    i++;
+  }
+
   return false;
 }

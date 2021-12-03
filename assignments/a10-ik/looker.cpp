@@ -30,11 +30,18 @@ public:
 
    void lookAtTarget(Joint* head, const vec3& target) {
       // TODO: Your code here
+      //idea: use the fact that the columns of a rotation matrix correspond to the axes of the frame
+      vec3 z = normalize(target-head->getGlobalTranslation()); //the forward direction
+      vec3 x = normalize(cross(vec3(0,1,0),z));
+      vec3 y = normalize(cross(z,x));
+      
+      quat rot = mat3(x,y,z); //global
+      head->setLocalRotation(head->getLocalRotation() * inverse(head->getGlobalRotation()) * rot); 
       head->fk();
    }
 
    void scene() {  
-      float r = 100;
+      float r = 100;//radius
       float angle = elapsedTime();
       _target = vec3(r * cos(angle), r * sin(angle) + r, 150);
 

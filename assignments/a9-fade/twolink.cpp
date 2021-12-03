@@ -126,40 +126,6 @@ class AIKSimple : public atkui::Framework
 
   void solveIKTwoLink(Skeleton &skeleton, const vec3 &goalPosition)
   {
-    /*
-    float l1 = length(skeleton.getByID(1)->getLocalTranslation());
-      float l2 = length(skeleton.getByID(2)->getLocalTranslation());
-
-      float r = length(goalPosition - skeleton.getByID(0)->getGlobalTranslation());
-
-      float cphi = (r * r - l1 * l1 - l2 * l2) / (-2.0f * l1 * l2);
-
-      cphi = max(min(cphi, 1.0f), -1.0f); // clamps cphi
-      float phi = acos(cphi);
-
-      float theta2z = phi - pi<float>();
-
-      float sTheta1z = -(l2)*sin(theta2z) / r;
-      sTheta1z = max(min(sTheta1z, 1.0f), -1.0f);
-
-      float theta1z = asin(sTheta1z);
-
-      float beta = atan2(-(goalPosition.z - skeleton.getByID(0)->getGlobalTranslation().z), (goalPosition.x - skeleton.getByID(0)->getGlobalTranslation().x));
-      float gamma = asin(max(min((goalPosition.y - skeleton.getByID(0)->getGlobalTranslation().y) / r, 1.0f), -1.0f));
-
-      quat Ry = angleAxis(beta, vec3(0, 1, 0));
-      quat RzGamma = angleAxis(gamma, vec3(0, 0, 1));
-      quat RzTheta1 = angleAxis(theta1z, vec3(0, 0, 1));
-
-      Transform F10(Ry * RzGamma * RzTheta1, skeleton.getByID(0)->getLocalTranslation());
-      Transform F21(angleAxis(theta2z, vec3(0, 0, 1)), skeleton.getByID(1)->getLocalTranslation());
-      Transform F32(angleAxis(0.0f, vec3(0, 0, 1)), skeleton.getByID(2)->getLocalTranslation());
-
-      skeleton.getByID(0)->setLocal2Parent(F10);
-      skeleton.getByID(1)->setLocal2Parent(F21);
-      skeleton.getByID(2)->setLocal2Parent(F32);
-      skeleton.fk();
-    */
     float l1 = length(skeleton.getByName("Elbow")->getLocalTranslation());
     float l2 = length(skeleton.getByName("Wrist")->getLocalTranslation());
     float r = length(goalPosition);
