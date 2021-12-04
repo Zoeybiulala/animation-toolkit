@@ -65,10 +65,10 @@ public:
       update();
       _drawer.draw(_skeleton, *this);
       setColor(vec3(0, 0, 1));
-      _lhandTarget = _lhandPos + vec3(10, 80 + 40.0f * sin(5.0f* elapsedTime()), 20);
+      _lhandTarget = _lhandPos + vec3(20.0f * sin(elapsedTime()), 0, 20.0f*cos(elapsedTime()));
       _rhandTarget = _rhandPos + vec3(-10, 80 + 40.0f * sin(5.0f*elapsedTime()+2.0f),20);
-      // drawSphere(_lhandTarget, 10);
-      // drawSphere(_rhandTarget, 10);
+      drawSphere(_lhandTarget, 10);
+      drawSphere(_rhandTarget, 10);
    }
 
 protected:
