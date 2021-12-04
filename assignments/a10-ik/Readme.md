@@ -6,10 +6,10 @@ https://user-images.githubusercontent.com/41777532/144697034-85ddb664-af3e-4f54-
 
 
 ## ikviewr
-
-
+* somehow in the recording mode I can't type in number for chain size..
 
 https://user-images.githubusercontent.com/41777532/144697051-8bdd9e06-e218-4935-831c-38af38051230.mov
+
 
 ## dancer
 
