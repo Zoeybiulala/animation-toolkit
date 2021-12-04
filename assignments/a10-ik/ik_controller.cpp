@@ -46,22 +46,26 @@ bool IKController::solveIKAnalytic(Skeleton& skeleton,
   quat Rz_theta2z = angleAxis(theta2z, axis);
   Transform F21(Rz_theta2z, jointPar->getLocalTranslation());
   jointPar->setLocal2Parent(F21);
+  jointGran->setLocalRotation(IdentityQ);
   skeleton.fk();
   
   vec3 pos = endEff->getGlobalTranslation();
   vec3 r1 = pos - jointGran->getGlobalTranslation();
   vec3 e1 = goalPos - pos;
+  if(length(e1)<epsilon){
+    return false;
+  }
 
   axis = normalize(cross(r1,e1));
-  if (length(cross(r1,e1)) == 0) {
-      axis = vec3(0, 0, 1);
+  if (length(cross(r1,e1)) < epsilon) {
+      return false;
   }
   float angle = atan2((double)length(cross(r1,e1)),(double)(dot(r1,r1)+dot(r1,e1)));
 
   axis = jointGran->getLocal2Global().inverse().transformVector(axis);
-  // curr->getParent()->setLocalRotation(rot);//only curr also don't work
-  Transform F = Transform(angleAxis(angle, axis), vec3(0));
-  jointGran->setLocal2Parent(jointGran->getLocal2Parent() * F);
+  quat rot = angleAxis(angle, axis);
+  jointGran->setLocalRotation(rot * jointGran->getLocalRotation());
+  
 
   skeleton.fk();
   
@@ -85,19 +89,18 @@ bool IKController::solveIKCCD(Skeleton& skeleton, int jointid,
       vec3 currPos = curr->getGlobalTranslation();
 
       vec3 e = goalPos - pos;
+      if(length(e) < 0.0000001){
+        continue;
+      }
       vec3 r = pos - currPos;
-      vec3 axis = normalize(cross(r,e));
-      if (length(cross(r,e)) == 0) {
-              axis = vec3(0, 0, 1);
-          }
-
+      vec3 axis = normalize(cross(r,e));//global
+      if (length(cross(r,e)) < 0.000001) {
+        continue;
+      }
       float nudge = nudgeFactor * atan2((double)length(cross(r,e)),(double)(dot(r,r)+dot(r,e)));
-      quat rot = angleAxis(nudge, axis);//global
-
       axis = curr->getLocal2Global().inverse().transformVector(axis);
-      // curr->getParent()->setLocalRotation(rot);//only curr also don't work
-      Transform F = Transform(angleAxis(nudge, axis), vec3(0));
-      curr->setLocal2Parent(curr->getLocal2Parent() * F);
+      quat rot = angleAxis(nudge, axis);
+      curr->setLocalRotation(rot * curr->getLocalRotation());//only curr also don't work
 
       skeleton.fk();
       pos = endEff->getGlobalTranslation();
