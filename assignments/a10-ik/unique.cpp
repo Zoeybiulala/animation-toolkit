@@ -51,7 +51,7 @@ public:
       Joint* LF = _skeleton.getByName("Beta:LeftFoot");
       Joint* RF = _skeleton.getByName("Beta:RightFoot");
       ik.solveIKAnalytic(_skeleton, LF->getID(), _lFootPos);
-      ik.solveIKAnalytic(_skeleton, RF->getID(), _rFootPos);
+      ik.solveIKAnalytic(_skeleton, RF->getID(), _rFTarget);
       LF->setLocalRotation(LF->getLocalRotation()*inverse(LF->getGlobalRotation()) *_lRot);
       RF->setLocalRotation(RF->getLocalRotation()*inverse(RF->getGlobalRotation()) *_rRot);
       _skeleton.fk();
@@ -65,10 +65,16 @@ public:
       update();
       _drawer.draw(_skeleton, *this);
       setColor(vec3(0, 0, 1));
-      _lhandTarget = _lhandPos + vec3(20.0f * sin(elapsedTime()), 0, 20.0f*cos(elapsedTime()));
+      _lhandTarget = _lhandPos + vec3(20.0f * sin(5.0f * elapsedTime()),100.0f, 20.0f*cos(elapsedTime()));
+      setColor(vec3(0,0,0));
+      drawCube(_lhandTarget + vec3(-7.5f,10.0f,0),vec3(15.0f, 30.0f,15.0f));
+      setColor(vec3(0, 0, 1));
+      drawCube(_lhandTarget+ vec3(-7.5f,30.0f,0),vec3(80.0f,40.0f,5.0f));
       _rhandTarget = _rhandPos + vec3(-10, 80 + 40.0f * sin(5.0f*elapsedTime()+2.0f),20);
-      drawSphere(_lhandTarget, 10);
-      drawSphere(_rhandTarget, 10);
+      _rFTarget = _rFootPos + vec3(-10.0f,30.0f+ 30.0f * sin(4.0f* elapsedTime()),20.0f);
+      // drawSphere(_lhandTarget, 10);
+      // drawSphere(_rhandTarget, 10);
+      // drawSphere(_rFTarget,10);
    }
 
 protected:
@@ -88,6 +94,8 @@ protected:
    vec3 _hipPos;
 
    // feet
+   vec3 _lFTarget;
+   vec3 _rFTarget;
    vec3 _lFootPos;
    vec3 _rFootPos;
    quat _lRot;
