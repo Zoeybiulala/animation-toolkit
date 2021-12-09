@@ -22,7 +22,7 @@ public:
 
       _heading = 0;
       _offset = vec3(0);
-      _offset[1] = _motion.getKey(0).rootPos[1];
+      // _offset[1] = _motion.getKey(0).rootPos[1];
       _time = 0;
 
       _reoriented = reorient(_motion, _offset, _heading);
