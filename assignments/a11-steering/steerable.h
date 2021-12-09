@@ -47,7 +47,7 @@ protected:
    float _torque;
 
    // Control input: 1D speed and heading
-   float _vd;
+   float _vd; //so actually it's speed?
    float _thetad;
 
    // computed quantities (kept for visualization)
