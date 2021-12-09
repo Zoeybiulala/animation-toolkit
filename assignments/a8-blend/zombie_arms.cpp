@@ -41,9 +41,9 @@ public:
           currPos = motion.getKey(i);
 
          currPos.jointRots[leftArm->getID()] = 
-            (leftLocalRot * inverse(currPos.jointRots[leftArm->getID()])) * motion.getKey(0).jointRots[leftArm->getID()];
+            (leftLocalRot * inverse(motion.getKey(0).jointRots[leftArm->getID()]) * currPos.jointRots[leftArm->getID()]);
          currPos.jointRots[rightArm->getID()] = 
-            (rightLocalRot * inverse(currPos.jointRots[rightArm->getID()])) * motion.getKey(0).jointRots[rightArm->getID()];
+            (rightLocalRot * inverse(motion.getKey(0).jointRots[rightArm->getID()]) * currPos.jointRots[rightArm->getID()] );
          
          currPos.jointRots[leftElbow->getID()] = elbowLocalRot;
          currPos.jointRots[rightElbow->getID()] = elbowLocalRot;

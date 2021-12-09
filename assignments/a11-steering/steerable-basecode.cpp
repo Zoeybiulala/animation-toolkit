@@ -4,9 +4,10 @@
 using namespace glm;
 using namespace atk;
 
-float ASteerable::kVelKv = 4.0; 
-float ASteerable::kOriKv = 40.0;  
-float ASteerable::kOriKp = 50.0;
+float ASteerable::kVelKv = 16.0; 
+float ASteerable::kOriKv = 16.0;  
+float ASteerable::kOriKp = 64.0;
+
 
 // Given a desired velocity, veld, and dt, compute a transform holding 
 // the new orientation and change in position
@@ -21,16 +22,17 @@ void ASteerable::senseControlAct(const vec3& veld, float dt)
 
    // compute _force and _torque
    _force = _mass * kVelKv * (_vd - _state[2]);  
-   _torque = _inertia * (-kOriKv * _state[3] + kOriKp * (_thetad - _state[1]));
+   _torque = _inertia * ((-1)*kOriKv * _state[3] + kOriKp * (_thetad - _state[1]));
 
    // find derivative
    _derivative[0] = _state[2];
    _derivative[1] = _state[3];
    _derivative[2] = _force/_mass;
    _derivative[3] = _torque/_inertia;
+
    // update state
    for(int i =0; i< 4; i++) {
-      _state[i] =  _state[i] + dt * _derivative[0];
+      _state[i] =  _state[i] + dt * _derivative[i];
    }
 
    // compute global position and orientation and update _characterRoot

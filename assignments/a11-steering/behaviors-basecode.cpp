@@ -11,7 +11,7 @@ ABehavior::ABehavior(const char* name) : _name(name)
 {
    // TODO: set good values
    setParam("MaxSpeed", 100);
-   setParam("AgentRadius", 2);
+   setParam("AgentRadius", 5);
 }
 
 //--------------------------------------------------------------
@@ -34,8 +34,10 @@ vec3 ASeek::calculateDesiredVelocity(const ASteerable& actor,
 {
    vec3 pos = actor.getPosition();
    vec3 dir = target-pos;
-   normalize(dir);
-   return 100.0f * dir;
+   dir = normalize(dir);
+   if(distance(pos, target) < getParam("AgentRadius")) return vec3(0);
+   return getParam("MaxSpeed") * dir;
+   
 }
 
 //--------------------------------------------------------------
@@ -55,8 +57,11 @@ AFlee::AFlee() : ABehavior("Flee")
 // @note: call getParam("MaxSpeed") to get the max speed
 vec3 AFlee::calculateDesiredVelocity(const ASteerable& actor,
    const AWorld& world, const vec3& targetPos)
-{
-    return vec3(0,0,0);
+{  
+   vec3 pos = actor.getPosition();
+   vec3 dir = targetPos-pos;
+   dir = normalize(dir);
+    return (-1)*getParam("MaxSpeed") * dir;
 }
 
 //--------------------------------------------------------------
