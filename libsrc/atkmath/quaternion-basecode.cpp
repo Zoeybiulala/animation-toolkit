@@ -6,28 +6,34 @@ namespace atkmath {
 
 Quaternion Quaternion::Slerp(const Quaternion& q0, const Quaternion& q1, double t)
 {  
-   double omega  = acos(q0[0]*q1[0]+q0[1]*q1[1]+q0[2]*q1[2]+q0[3]*q1[3]);
+   double prod = Dot(q0,q1); //cos(omega)
+   if(prod > 1) prod = 1;
+   if(prod < -1) prod = -1;
+   double omega = acos(prod);
+   if(sin(omega) == 0) return q0;
 	Quaternion q = (sin(omega * (1-t))/sin(omega)) * q0 + (sin(omega * t)/sin(omega)) * q1;
 	return q;
 }
 
 void Quaternion::toAxisAngle (Vector3& axis, double& angleRad) const
 {	
-	angleRad = acos(mW)*2;
-	axis[0] = mX/sin(angleRad/2);
-	axis[1] = mY/sin(angleRad/2);
-	axis[2] = mZ/sin(angleRad/2);
-   axis.normalize();
+      angleRad = 2 * acos(mW);
+		Vector3 v = Vector3(mX, mY, mZ);
+		if (sqrt(mX * mX + mY * mY +mZ * mZ) == 0)
+			axis = Vector3(1, 0, 0);
+		else
+			axis = v / sqrt(mX * mX + mY * mY + mZ * mZ);
+		axis.normalize();
 }
 
 void Quaternion::fromAxisAngle (const Vector3& axis, double angleRad)
 {	
 	float t = (float) angleRad/2;
-	Vector3 norm = axis.normalized();
-	mX = norm[0] * sin(t);
-	mY = norm[1] * sin(t);
-	mZ = norm[2] * sin(t);
-	mW = cos(t);
+   mW = cos(t);
+	mX = sin(t) * axis[0];
+	mY = sin(t) * axis[1];
+	mZ = sin(t) * axis[2];
+	normalize();
 }
 
 Matrix3 Quaternion::toMatrix () const
