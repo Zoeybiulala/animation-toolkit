@@ -21,8 +21,15 @@ void ASteerable::senseControlAct(const vec3& veld, float dt)
    _thetad = atan2(veld[0],veld[2]);
 
    // compute _force and _torque
+   float diff = _thetad - _state[1];
+   if(diff < -180) {
+      diff = -180;
+   } else if (diff > 180) {
+      diff = 180;
+   }
    _force = _mass * kVelKv * (_vd - _state[2]);  
-   _torque = _inertia * ((-1)*kOriKv * _state[3] + kOriKp * (_thetad - _state[1]));
+   _torque = _inertia * ((-1)*kOriKv * _state[3] + kOriKp * diff);
+   
 
    // find derivative
    _derivative[0] = _state[2];
@@ -48,10 +55,13 @@ void ASteerable::randomizeAppearance()
 {
    // to randomize the walking animations, compute different initial values 
    // for _time
+   _time = agl::random() * 5.0f+1.0f;
 
    // to randomize color, call _drawer.setColor
+   setColor(vec3(agl::random(),agl::random(),agl::random()));
 
    // to randomize shape, compute random values for _drawer.setJointRadius
+   _drawer.size = vec3(agl::random()*4.0f+1.0f,agl::random()*2.0f+1.0f,agl::random()*4.0f+1.0f);
    // or randomly assign different drawers to have a mix of characters
 }
 

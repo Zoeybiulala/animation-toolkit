@@ -11,7 +11,7 @@ ABehavior::ABehavior(const char* name) : _name(name)
 {
    // TODO: set good values
    setParam("MaxSpeed", 100);
-   setParam("AgentRadius", 5);
+   setParam("AgentRadius", 50);
 }
 
 //--------------------------------------------------------------
@@ -70,8 +70,8 @@ vec3 AFlee::calculateDesiredVelocity(const ASteerable& actor,
 AArrival::AArrival() : ABehavior("Arrival") 
 {
    // TODO: Set good parameters
-   setParam("kArrival", 1);
-   setParam("TargetRadius", 1);
+   setParam("kArrival", 10);
+   setParam("TargetRadius", 100);
 }
 
 //
@@ -83,7 +83,13 @@ AArrival::AArrival() : ABehavior("Arrival")
 vec3 AArrival::calculateDesiredVelocity(const ASteerable& actor,
    const AWorld& world, const vec3& targetPos)
 {
-    return vec3(0,0,0);
+   float r = getParam("TargetRadius");
+   vec3 pos = actor.getPosition();
+   vec3 targetOffset = targetPos - pos;
+   float distance = length(targetPos);
+   float speed = getParam("MaxSpeed");
+   if(distance <= r) speed = (distance/r) * getParam("MaxSpeed");
+   return speed * normalize(targetOffset);
 }
 
 //--------------------------------------------------------------
@@ -92,7 +98,7 @@ vec3 AArrival::calculateDesiredVelocity(const ASteerable& actor,
 ADeparture::ADeparture() : ABehavior("Departure") 
 {
    setParam("InnerRadius", 1);
-   setParam("OuterRadius", 1);
+   setParam("OuterRadius", 10);
    setParam("kDeparture", 1);
 }
 
@@ -102,7 +108,13 @@ ADeparture::ADeparture() : ABehavior("Departure")
 vec3 ADeparture::calculateDesiredVelocity(const ASteerable& actor,
    const AWorld& world, const vec3& targetPos)
 {
-   return vec3(0,0,0);
+   vec3 pos = actor.getPosition();
+   float speed = getParam("MaxSpeed");
+   float distance = length(targetPos - pos);
+   if (distance <= getParam("OuterRadius"))
+      speed = (distance / getParam("TargetRadius")) * getParam("MaxSpeed");
+
+   return -normalize(targetPos-pos) * speed;
 }
 
 //--------------------------------------------------------------
@@ -132,8 +144,17 @@ AWander::AWander() : ABehavior("Wander")
 // Wander returns a velocity whose direction changes randomly (and smoothly)
 vec3 AWander::calculateDesiredVelocity(const ASteerable& actor,
    const AWorld& world, const vec3& target)
-{
-   return vec3(0,0,0);
+{  
+   //wander strength
+   float r1 = 100.0f;
+   //wander rate
+   float r2 = 10.0f;
+   vec3 vd = actor.getDesiredVelocity();
+   vec3 jitter = vec3(r2 * agl::random(-1,1), 0, r2 * agl::random(-1,1));
+   vd += r1 * normalize(jitter);
+   return vd; 
+
+
 }
 
 //--------------------------------------------------------------
