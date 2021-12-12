@@ -3,6 +3,7 @@
 
 using namespace glm;
 using namespace atk;
+using namespace std;
 
 float ASteerable::kVelKv = 16.0; 
 float ASteerable::kOriKv = 16.0;  
@@ -65,6 +66,4 @@ void ASteerable::randomizeAppearance()
    // or randomly assign different drawers to have a mix of characters
 }
 
-int main() {
-   
-}
+
