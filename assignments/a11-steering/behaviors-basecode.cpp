@@ -139,19 +139,28 @@ vec3 AAvoid::calculateDesiredVelocity(const ASteerable& actor,
 AWander::AWander() : ABehavior("Wander")
 {
    setParam("kWander", 1);
+   setParam("angle",0);
 }
 
 // Wander returns a velocity whose direction changes randomly (and smoothly)
 vec3 AWander::calculateDesiredVelocity(const ASteerable& actor,
    const AWorld& world, const vec3& target)
 {  
+   vec3 center;
+   if(length(actor.getVelocity() )== 0) {
+      center = actor.getPosition() + normalize(actor.getPosition() * vec3(0,0,1)) * 200.0f;
+   } else {
+      center = actor.getPosition() + normalize(actor.getVelocity()) * 200.0f;
+   }
+   
+   setParam("angle", getParam("angle") + agl::random(-1,1));
    //wander strength
    float r1 = 100.0f;
    //wander rate
-   float r2 = 10.0f;
-   vec3 vd = actor.getDesiredVelocity();
-   vec3 jitter = vec3(r2 * agl::random(-1,1), 0, r2 * agl::random(-1,1));
-   vd += r1 * normalize(jitter);
+   // float r2 = 10.0f;
+   vec3 vd;
+   vec3 jitterPos = center + r1 * vec3(cos(getParam("angle")), 0, sin(getParam("angle")));
+   vd = normalize(jitterPos - actor.getPosition()) * getParam("MaxSpeed");
    return vd; 
 
 

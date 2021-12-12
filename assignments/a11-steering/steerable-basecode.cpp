@@ -55,13 +55,13 @@ void ASteerable::randomizeAppearance()
 {
    // to randomize the walking animations, compute different initial values 
    // for _time
-   _time = agl::random() * 5.0f+1.0f;
+   // _time = agl::random() * 5.0f+1.0f;
 
-   // to randomize color, call _drawer.setColor
-   setColor(vec3(agl::random(),agl::random(),agl::random()));
+   // // to randomize color, call _drawer.setColor
+   // setColor(vec3(agl::random(),agl::random(),agl::random()));
 
-   // to randomize shape, compute random values for _drawer.setJointRadius
-   _drawer.size = vec3(agl::random()*4.0f+1.0f,agl::random()*2.0f+1.0f,agl::random()*4.0f+1.0f);
-   // or randomly assign different drawers to have a mix of characters
+   // // to randomize shape, compute random values for _drawer.setJointRadius
+   // _drawer.size = vec3(agl::random()*4.0f+1.0f,agl::random()*2.0f+1.0f,agl::random()*4.0f+1.0f);
+   // // or randomly assign different drawers to have a mix of characters
 }
 
